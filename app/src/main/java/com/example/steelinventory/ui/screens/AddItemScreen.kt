@@ -33,8 +33,12 @@ fun AddItemScreen(dao: InventoryDao, onSaved: () -> Unit) {
     val maxW = weightMax.toDoubleOrNull()
     val count = bundleCount.toIntOrNull()
 
-    val avgWeight = if (minW != null && maxW != null) round2((minW + maxW) / 2) else null
-    val bundleWeight = if (avgWeight != null && count != null) round2(count * avgWeight) else null
+    val avgRaw =
+        if (minW != null && maxW != null) (minW + maxW) / 2 else null
+    val avgWeight = avgRaw?.let { round2(it) }
+    val bundleWeight =
+        if (avgRaw != null && count != null) round2(count * avgRaw) else null
+
 
     Column(
         modifier = Modifier
