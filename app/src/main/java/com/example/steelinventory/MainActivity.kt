@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
                 val nav = rememberNavController()
                 NavHost(nav, startDestination = "home") {
                     composable("home") { HomeScreen(nav) }
-                    composable("add") { AddItemScreen(db.inventoryDao(), nav) }
+                    composable("add") { AddItemScreen(db.inventoryDao()) { nav.popBackStack() } }
                     composable("inventory") { InventoryScreen(db.inventoryDao(), nav) }
                     composable("factory_products") { FactoryProductsScreen(db.inventoryDao()) }
                     composable("product_report") { ProductReportScreen(db.inventoryDao()) }
