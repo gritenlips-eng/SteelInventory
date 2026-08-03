@@ -25,3 +25,29 @@ fun FactoryProductsScreen(dao: InventoryDao) {
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(
                             modifier = Modifier.padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(factory, style = MaterialTheme.typography.titleMedium)
+
+                            val products = items.groupBy {
+                                "${it.productType} ${it.size} (اعلامی ${kg(it.declaredWeight)})"
+                            }
+
+                            products.forEach { (product, pItems) ->
+                                val min = pItems.minOf { it.weightPerPieceMin }
+                                val max = pItems.maxOf { it.weightPerPieceMax }
+                                Column {
+                                    Text(product, style = MaterialTheme.typography.bodyMedium)
+                                    Text(
+                                        "وزن شاخه: ${kgRange(min, max)}",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
