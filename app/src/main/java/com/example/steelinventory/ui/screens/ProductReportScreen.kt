@@ -7,6 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.steelinventory.data.InventoryDao
+import com.example.steelinventory.util.kg
+import com.example.steelinventory.util.kgRange
 
 @Composable
 fun ProductReportScreen(dao: InventoryDao) {
@@ -21,12 +23,20 @@ fun ProductReportScreen(dao: InventoryDao) {
                 item {
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            Text("${key.first} | سایز: ${key.second} | وزن: ${key.third}kg",
-                                style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                "${key.first} | سایز: ${key.second} | وزن اعلامی: ${kg(key.third)}",
+                                style = MaterialTheme.typography.titleMedium
+                            )
                             val byFactory = items.groupBy { it.factoryName }
                             byFactory.forEach { (factory, fItems) ->
                                 Text("  کارخانه: $factory")
-                                fItems.forEach { Text("    بندیل: ${it.bundleWeight}kg | تاریخ: ${it.receiptDate}") }
+                                fItems.forEach {
+                                    Text(
+                                        "    بندیل: ${kg(it.bundleWeight)} | " +
+                                            "شاخه: ${kgRange(it.weightPerPieceMin, it.weightPerPieceMax)} | " +
+                                            "تاریخ: ${it.receiptDate}"
+                                    )
+                                }
                             }
                         }
                     }
