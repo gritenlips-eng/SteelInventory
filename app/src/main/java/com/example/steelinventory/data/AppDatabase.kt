@@ -12,11 +12,12 @@ import androidx.room.RoomDatabase
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun inventoryDao(): InventoryDao
+    abstract fun channelSpecDao(): ChannelSpecDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
 
-        fun get(context: Context): AppDatabase =
+        fun getDatabase(context: Context): AppDatabase =
             INSTANCE ?: synchronized(this) {
                 Room.databaseBuilder(
                     context.applicationContext,
