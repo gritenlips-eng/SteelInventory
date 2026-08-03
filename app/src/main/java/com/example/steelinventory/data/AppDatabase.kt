@@ -5,17 +5,27 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [InventoryItem::class, ChannelSpec::class], version = 1)
+@Database(
+    entities = [InventoryItem::class, ChannelSpec::class],
+    version = 2,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun inventoryDao(): InventoryDao
-    abstract fun channelSpecDao(): ChannelSpecDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
-        fun getDatabase(context: Context): AppDatabase =
+
+        fun get(context: Context): AppDatabase =
             INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(context, AppDatabase::class.java, "steel_inventory.db")
-                    .build().also { INSTANCE = it }
+                Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "steel_inventory.db"
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
+                    .also { INSTANCE = it }
             }
     }
 }
