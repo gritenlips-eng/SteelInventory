@@ -14,7 +14,7 @@ import com.example.steelinventory.data.InventoryItem
 import com.example.steelinventory.util.kg
 import com.example.steelinventory.util.round2
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import com.example.steelinventory.util.todayJalali
 
 @Composable
 fun AddItemScreen(dao: InventoryDao, onSaved: () -> Unit) {
@@ -139,7 +139,8 @@ fun AddItemScreen(dao: InventoryDao, onSaved: () -> Unit) {
                             weightPerPieceMin = round2(minW),
                             weightPerPieceMax = round2(maxW),
                             bundleWeight = bundleWeight,
-                            receiptDate = LocalDate.now().toString()
+                            receiptDate = todayJalali()
+
                         )
                     )
                     message = "ذخیره شد"
