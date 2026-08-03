@@ -10,6 +10,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.steelinventory.data.InventoryDao
 import com.example.steelinventory.data.InventoryItem
+import com.example.steelinventory.util.kg
+import com.example.steelinventory.util.kgRange
 
 @Composable
 fun InventoryScreen(dao: InventoryDao, nav: NavController) {
@@ -22,7 +24,7 @@ fun InventoryScreen(dao: InventoryDao, nav: NavController) {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             grouped.forEach { (type, typeItems) ->
                 item { Text(type, style = MaterialTheme.typography.titleMedium) }
-                val bySizeWeight = typeItems.groupBy { "${it.size} - ${it.declaredWeight}kg" }
+                val bySizeWeight = typeItems.groupBy { "${it.size} - ${kg(it.declaredWeight)}" }
                 bySizeWeight.forEach { (sizeWeight, swItems) ->
                     item { Text("  $sizeWeight", style = MaterialTheme.typography.bodyLarge) }
                     val byFactory = swItems.groupBy { it.factoryName }
@@ -40,8 +42,11 @@ fun InventoryScreen(dao: InventoryDao, nav: NavController) {
 fun ItemRow(item: InventoryItem) {
     Card(modifier = Modifier.fillMaxWidth().padding(start = 16.dp)) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text("بندیل: ${item.bundleCount} شاخه | وزن شاخه: ${item.weightPerPiece}kg")
-            Text("وزن بندیل: ${item.bundleWeight}kg | تاریخ: ${item.receiptDate}")
+            Text(
+                "بندیل: ${item.bundleCount} شاخه | " +
+                    "وزن شاخه: ${kgRange(item.weightPerPieceMin, item.weightPerPieceMax)}"
+            )
+            Text("وزن بندیل: ${kg(item.bundleWeight)} | تاریخ: ${item.receiptDate}")
         }
     }
 }
