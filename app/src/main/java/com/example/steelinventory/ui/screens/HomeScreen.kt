@@ -28,5 +28,12 @@ fun HomeScreen(nav: NavController) {
                 Text(label)
             }
         }
+        Spacer(Modifier.height(24.dp))
+        OutlinedButton(
+            onClick = { nav.navigate("settings") },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("تنظیمات و پشتیبان‌گیری")
+        }
     }
 }
