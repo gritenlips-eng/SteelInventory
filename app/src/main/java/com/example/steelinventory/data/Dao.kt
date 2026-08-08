@@ -6,11 +6,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface InventoryDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)   // ← تغییر ۱
-    suspend fun insertItem(item: InventoryItem)
+    // بدون onConflict: هر رسید یک ردیف جدید می‌سازد و id آن برگردانده می‌شود
+    @Insert
+    suspend fun insertItem(item: InventoryItem): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)   // ← تغییر ۲
-    suspend fun insertAll(items: List<InventoryItem>)
+    @Insert
+    suspend fun insertAll(items: List<InventoryItem>): List<Long>
 
     @Update
     suspend fun updateItem(item: InventoryItem)
@@ -29,7 +30,6 @@ interface InventoryDao {
 
     @Query("SELECT * FROM inventory_items WHERE id = :id")
     fun getItemById(id: Long): Flow<InventoryItem?>
-
 
     @Query(
         """
