@@ -7,10 +7,9 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "inventory_items",
     indices = [
-        Index(
-            value = ["factoryName", "productType", "size"],
-            unique = true
-        )
+        // ایندکس غیریکتا: فقط برای سرعت جستجو
+        // unique = true حذف شد تا چند رسید با مشخصات یکسان بتوانند هم‌زمان ثبت شوند
+        Index(value = ["factoryName", "productType", "size"])
     ]
 )
 data class InventoryItem(
