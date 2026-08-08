@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,9 +20,6 @@ import androidx.navigation.NavController
 import com.example.steelinventory.data.AppDatabase
 import com.example.steelinventory.data.InventoryItem
 import com.example.steelinventory.util.kg
-import com.example.steelinventory.util.num
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,19 +28,13 @@ fun FactoryProductsScreen(navController: NavController) {
     val db = remember { AppDatabase.getDatabase(context) }
     val dao = remember { db.inventoryDao() }
 
-    var allItems by remember { mutableStateOf<List<InventoryItem>>(emptyList()) }
-
-    LaunchedEffect(Unit) {
-        allItems = withContext(Dispatchers.IO) {
-            dao.getAllItems()
-        }
-    }
+    // Flow را مستقیم به State تبدیل می‌کنیم؛ با هر تغییر دیتابیس خودکار به‌روز می‌شود
+    val allItems by dao.getAllItems().collectAsState(initial = emptyList())
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedProductType by remember { mutableStateOf("همه") }
-    val expandedFactories = remember { mutableStateOf(setOf<String>()) }
+    var expandedFactories by remember { mutableStateOf(setOf<String>()) }
 
-    // فیلتر و گروه‌بندی
     val productTypes = remember(allItems) {
         listOf("همه") + allItems.map { it.productType }.distinct().sorted()
     }
@@ -85,7 +76,6 @@ fun FactoryProductsScreen(navController: NavController) {
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            // جستجو
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
@@ -97,9 +87,9 @@ fun FactoryProductsScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // فیلتر نوع محصول
             ScrollableTabRow(
-                selectedTabIndex = productTypes.indexOf(selectedProductType),
+                // اگر نوع انتخابی در لیست نبود، به تب اول برمی‌گردیم تا کرش نکند
+                selectedTabIndex = productTypes.indexOf(selectedProductType).coerceAtLeast(0),
                 modifier = Modifier.fillMaxWidth(),
                 edgePadding = 0.dp
             ) {
@@ -126,17 +116,18 @@ fun FactoryProductsScreen(navController: NavController) {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     groupedByFactory.forEach { (factoryName, items) ->
-                        item {
+                        item(key = factoryName) {
                             FactorySection(
                                 factoryName = factoryName,
                                 items = items,
-                                isExpanded = expandedFactories.value.contains(factoryName),
+                                isExpanded = expandedFactories.contains(factoryName),
                                 onToggle = {
-                                    expandedFactories.value = if (expandedFactories.value.contains(factoryName)) {
-                                        expandedFactories.value - factoryName
-                                    } else {
-                                        expandedFactories.value + factoryName
-                                    }
+                                    expandedFactories =
+                                        if (expandedFactories.contains(factoryName)) {
+                                            expandedFactories - factoryName
+                                        } else {
+                                            expandedFactories + factoryName
+                                        }
                                 }
                             )
                         }
@@ -159,7 +150,6 @@ fun FactorySection(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-            // هدر کارخانه
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -181,18 +171,18 @@ fun FactorySection(
                     )
                 }
                 Icon(
-                    imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp
+                    else Icons.Default.KeyboardArrowDown,
                     contentDescription = if (isExpanded) "بستن" else "باز کردن"
                 )
             }
 
-            // لیست محصولات
             AnimatedVisibility(visible = isExpanded) {
                 Column {
                     HorizontalDivider()
-                    items.forEach { item ->
+                    items.forEachIndexed { index, item ->
                         ProductRow(item)
-                        if (item != items.last()) {
+                        if (index < items.lastIndex) {
                             HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
                         }
                     }
