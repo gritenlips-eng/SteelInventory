@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     composable("home") { HomeScreen(nav) }
                     composable("add") { AddItemScreen(db.inventoryDao()) { nav.popBackStack() } }
                     composable("inventory") { InventoryScreen(db.inventoryDao(), nav) }
-                    composable("factory_products") { FactoryProductsScreen(db.inventoryDao()) }
+                    composable("factory_products") { FactoryProductsScreen(nav) }
                     composable("product_report") { ProductReportScreen(db.inventoryDao()) }
                     composable("channel_spec") { ChannelSpecScreen(db.channelSpecDao()) }
                     composable("settings") {
