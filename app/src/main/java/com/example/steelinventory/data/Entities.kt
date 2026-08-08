@@ -1,9 +1,18 @@
 package com.example.steelinventory.data
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "inventory_items")
+@Entity(
+    tableName = "inventory_items",
+    indices = [
+        Index(
+            value = ["factoryName", "productType", "size"],
+            unique = true
+        )
+    ]
+)
 data class InventoryItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val productType: String,
