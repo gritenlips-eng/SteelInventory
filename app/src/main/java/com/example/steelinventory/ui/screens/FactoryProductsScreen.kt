@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ExpandLess
@@ -14,18 +13,31 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.steelinventory.data.AppDatabase
 import com.example.steelinventory.data.InventoryItem
-import com.example.steelinventory.ui.viewmodel.InventoryViewModel
-import com.example.steelinventory.util.formatWeight
+import com.example.steelinventory.util.kg
+import com.example.steelinventory.util.num
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FactoryProductsScreen(navController: NavController, viewModel: InventoryViewModel = viewModel()) {
-    val allItems by viewModel.allItems.collectAsState(initial = emptyList())
+fun FactoryProductsScreen(navController: NavController) {
+    val context = LocalContext.current
+    val db = remember { AppDatabase.getDatabase(context) }
+    val dao = remember { db.inventoryDao() }
+
+    var allItems by remember { mutableStateOf<List<InventoryItem>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        allItems = withContext(Dispatchers.IO) {
+            dao.getAllItems()
+        }
+    }
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedProductType by remember { mutableStateOf("همه") }
@@ -211,7 +223,7 @@ fun ProductRow(item: InventoryItem) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = "وزن بندیل: ${formatWeight(item.bundleWeight)}",
+                text = "وزن بندیل: ${kg(item.bundleWeight)}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -222,7 +234,7 @@ fun ProductRow(item: InventoryItem) {
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = formatWeight(item.declaredWeight),
+                text = kg(item.declaredWeight),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold
             )
