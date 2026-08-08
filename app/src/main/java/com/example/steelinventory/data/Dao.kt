@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface InventoryDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)   // ← تغییر ۱
     suspend fun insertItem(item: InventoryItem)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)   // ← تغییر ۲
     suspend fun insertAll(items: List<InventoryItem>)
 
     @Update
