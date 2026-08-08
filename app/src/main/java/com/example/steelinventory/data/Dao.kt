@@ -12,12 +12,6 @@ interface InventoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<InventoryItem>)
 
-    @Insert
-    suspend fun insertItem(item: InventoryItem)
-
-    @Insert
-    suspend fun insertAll(items: List<InventoryItem>)
-
     @Update
     suspend fun updateItem(item: InventoryItem)
 
