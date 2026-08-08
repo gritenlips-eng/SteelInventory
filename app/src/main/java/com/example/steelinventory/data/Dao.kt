@@ -28,7 +28,8 @@ interface InventoryDao {
     suspend fun getAllItemsOnce(): List<InventoryItem>
 
     @Query("SELECT * FROM inventory_items WHERE id = :id")
-    fun getItemById(id: Int): Flow<InventoryItem?>
+    fun getItemById(id: Long): Flow<InventoryItem?>
+
 
     @Query(
         """
