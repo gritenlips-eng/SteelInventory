@@ -1,4 +1,4 @@
-package com.example.steelinventory.ui.screens
+package com.example.steelinventory.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
