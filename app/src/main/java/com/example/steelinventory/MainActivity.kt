@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
                     composable("factory_products") { FactoryProductsScreen(db.inventoryDao()) }
                     composable("product_report") { ProductReportScreen(db.inventoryDao()) }
                     composable("channel_spec") { ChannelSpecScreen(db.channelSpecDao()) }
+                    composable("settings") { SettingsScreen(db) }
                 }
             }
         }
